@@ -27,7 +27,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-const List audioList = [
+const audioList = [
   '一闪一闪亮晶晶.mp3',
   '多吉多利每一天.mp3',
   '字母歌.m4a',
@@ -56,7 +56,7 @@ const List audioList = [
 ];
 
 class _MyHomePageState extends State<MyHomePage> {
-  final ap = AudioPlayer();
+  final ap = AudioPlayer(playerId: 'unique_player_id');
   late AudioCache ac;
 
   late String _current;
@@ -65,63 +65,73 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    ac = AudioCache(fixedPlayer: ap, prefix: 'assets/audio/');
     _current = audioList[0];
+
+    ac = AudioCache(fixedPlayer: ap, prefix: 'assets/audio/');
+    ac.loadAll(audioList);
+    AudioPlayer.logEnabled = true;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: ListView.builder(
-        itemCount: audioList.length,
-        itemBuilder: (ctx, index) {
-          return buildItem(audioList[index]);
-        },
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
-          height: 64,
-          color: Colors.orange.shade50,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          alignment: Alignment.center,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                  child: Text(
-                '${_current.split('.')[0]}',
-                style: TextStyle(fontSize: 18),
-              )),
-              _showPlay
-                  ? InkWell(
-                      onTap: () {
-                        ap.resume().catchError((e) {
-                          ac.loop(audioList[0]);
-                        });
-                        setState(() {
-                          _showPlay = false;
-                        });
-                      },
-                      child: Icon(
-                        Icons.play_circle_fill,
-                        size: 48,
-                      ))
-                  : InkWell(
-                      onTap: () {
-                        ap.pause();
-                        setState(() {
-                          _showPlay = true;
-                        });
-                      },
-                      child: Icon(
-                        Icons.pause_circle_filled,
-                        size: 48,
-                      )),
-            ],
+    return WillPopScope(
+      onWillPop: () async {
+        await ap.stop();
+        await ap.release();
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: ListView.builder(
+          itemCount: audioList.length,
+          itemBuilder: (ctx, index) {
+            return buildItem(audioList[index]);
+          },
+        ),
+        bottomNavigationBar: BottomAppBar(
+          child: Container(
+            height: 64,
+            color: Colors.orange.shade50,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            alignment: Alignment.center,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                    child: Text(
+                  '${_current.split('.')[0]}',
+                  style: TextStyle(fontSize: 18),
+                )),
+                _showPlay
+                    ? InkWell(
+                        onTap: () {
+                          ap.resume().catchError((e) {
+                            ac.loop(audioList[0]);
+                          });
+                          setState(() {
+                            _showPlay = false;
+                          });
+                        },
+                        child: Icon(
+                          Icons.play_circle_fill,
+                          size: 48,
+                        ))
+                    : InkWell(
+                        onTap: () {
+                          ap.pause();
+                          setState(() {
+                            _showPlay = true;
+                          });
+                        },
+                        child: Icon(
+                          Icons.pause_circle_filled,
+                          size: 48,
+                        )),
+              ],
+            ),
           ),
         ),
       ),
@@ -131,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget buildItem(String item) {
     return InkWell(
       onTap: () {
-        ac.loop(item);
+        ac.loop(item, isNotification: true);
         setState(() {
           _showPlay = false;
           _current = item;

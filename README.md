@@ -1,16 +1,5 @@
-# untitled
+# 极简音乐播放器
 
-A new Flutter project.
+用来给家里长辈使用，播放小朋友常听的音乐和故事，默认单曲循环
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![image](https://github.com/ZXQ-Kyle/music_player/screenshot/master/Screenshot_2021-08-02.jpg)
